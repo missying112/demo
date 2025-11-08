@@ -56,7 +56,7 @@ const ProfilePage = () => {
     const [showPersonalEditModal, setShowPersonalEditModal] = useState(false);
     const [editingPersonalInfo, setEditingPersonalInfo] = useState({}); // 用于表单数据
     const [isTechOnly, setIsTechOnly] = useState(false);
-
+    const userUsesGoogleChat = editingPersonalInfo.preferredCommunication === "Google Chat";
     // 工作经验状态 - 修改结构
     const [experienceList, setExperienceList] = useState([
         {
@@ -414,11 +414,6 @@ const ProfilePage = () => {
                         </div>
 
                         <div className="section">
-                            <h3>Preferred Communication Method</h3>
-                            <p className="section-text">{personalInfo.preferredCommunication}</p>
-                        </div>
-
-                        <div className="section">
                             <div className="section-header">
                                 <h3>Experience</h3>
                                 <button className="edit-button" aria-label="Edit Experience" onClick={handleOpenExperienceEdit}>
@@ -481,7 +476,7 @@ const ProfilePage = () => {
                         <h2>Edit Personal Information</h2>
                         <form onSubmit={(e) => e.preventDefault()}>
                             <label>
-                                First Name:
+                                First Name
                                 <input
                                     type="text"
                                     name="firstName"
@@ -490,7 +485,7 @@ const ProfilePage = () => {
                                 />
                             </label>
                             <label>
-                                Last Name:
+                                Last Name
                                 <input
                                     type="text"
                                     name="lastName"
@@ -499,7 +494,7 @@ const ProfilePage = () => {
                                 />
                             </label>
                             <label>
-                                Preferred Name:
+                                Preferred Name
                                 <input
                                     type="text"
                                     name="preferredName"
@@ -508,7 +503,7 @@ const ProfilePage = () => {
                                 />
                             </label>
                             <label>
-                                Current Timezone:
+                                Current Timezone
                                 <select
                                     name="timezone"
                                     value={editingPersonalInfo.timezone || ""}
@@ -521,7 +516,7 @@ const ProfilePage = () => {
                                 </select>
                             </label>
                             <label>
-                                LinkedIn:
+                                LinkedIn
                                 <input
                                     type="text"
                                     name="linkedin"
@@ -533,43 +528,58 @@ const ProfilePage = () => {
                             <div className="email-edit-section">
                                 <div className="section-header">
                                     <h3>Emails</h3>
-                                    <button className="edit-button" aria-label="Edit Experience" onClick={handleAddEditingEmail}>
-                                        +
-                                    </button>
+                                    <button className="edit-button" aria-label="Add Email" onClick={handleAddEditingEmail}>+</button>
                                 </div>
-                                <p className="modal-info-text">
-                                    Please select the email for admins to contact you.
-                                </p>
-                                {editingPersonalInfo.emails && editingPersonalInfo.emails.map((emailItem) => (
-                                    <div key={emailItem.id} className="email-edit-item">
-                                        <input
-                                            type="text"
-                                            value={emailItem.email}
-                                            onChange={(e) => handleEditingEmailChange(emailItem.id, e.target.value)}
-                                            readOnly={emailItem.isPrimary}
-                                            disabled={emailItem.isPrimary}
-                                            style={emailItem.isPrimary ? { backgroundColor: '#f0f0f0' } : {}}
-                                        />
-                                        <div className="email-roles-selection">
-                                            <label className="role-radio-label">
-                                                <input
-                                                    type="radio"
-                                                    name="contact_email_selection"
-                                                    checked={emailItem.isContact}
-                                                    onChange={() => handleSetContactEmail(emailItem.id)}
-                                                />
-                                                Set as Contact
-                                            </label>
+
+                                {/* 邮箱列表 */}
+                                {editingPersonalInfo.emails.map((emailItem) => {
+                                    const gmailError = userUsesGoogleChat && emailItem.isContact && !emailItem.email.endsWith('@google.com');
+                                    return (
+                                        <div key={emailItem.id} className="email-edit-item">
+                                            <input
+                                                type="text"
+                                                value={emailItem.email}
+                                                onChange={(e) => handleEditingEmailChange(emailItem.id, e.target.value)}
+                                                readOnly={emailItem.isPrimary}
+                                                disabled={emailItem.isPrimary}
+                                                style={emailItem.isPrimary ? { backgroundColor: '#f0f0f0' } : {}}
+                                                title={emailItem.isPrimary ? 'Primary email, cannot be modified' : ''}
+                                            />
+
+                                            <div className="email-roles-selection">
+                                                <label className="role-radio-label">
+                                                    <input
+                                                        type="radio"
+                                                        name="contact_email_selection"
+                                                        checked={emailItem.isContact}
+                                                        onChange={() => handleSetContactEmail(emailItem.id)}
+                                                    />
+                                                    Set as Contact
+                                                </label>
+
+                                                {/* Gmail 校验提示 */}
+                                                {gmailError && (
+                                                    <span style={{ color: 'red', fontSize: '12px', marginLeft: '8px' }}>
+                                                        ⚠️ Must select a Google account
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* 删除按钮 */}
+                                            {!emailItem.isPrimary && (
+                                                <button type="button" className="delete-btn" onClick={() => handleDeleteEditingEmail(emailItem.id)}>-</button>
+                                            )}
                                         </div>
-                                        {!emailItem.isPrimary && (
-                                            <button type="button" className="delete-btn" onClick={() => handleDeleteEditingEmail(emailItem.id)}>-</button>
-                                        )}
-                                    </div>
-                                ))}
+                                    );
+                                })}
+                                {/* 完整提示说明 */}
+                                <p className="modal-info-text">
+                                    Please select the email that <strong>administrators will use to contact you</strong>.<br />
+                                </p>
                             </div>
 
                             <label>
-                                Preferred Communication:
+                                Preferred Communication Method
                                 <div className="radio-group">
                                     <input
                                         type="radio"
