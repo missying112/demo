@@ -70,9 +70,9 @@ const ProfilePage = () => {
         preferredCommunication: "Email",
         // 修改 completedTraining 结构
         completedTraining: [
-            { id: 1, name: "Training 1", status: "completed", completionMonth: "January", completionYear: "2023", dueMonth: "", dueYear: "", link: "https://example.com/training1" },
-            { id: 2, name: "Training 2", status: "not completed", completionMonth: "", completionYear: "", dueMonth: "December", dueYear: "2024", link: "https://example.com/training2-due" },
-            { id: 3, name: "Training 3", status: "not completed", completionMonth: "", completionYear: "", dueMonth: "", dueYear: "", link: "" },
+            { id: 1, name: "Training 1", status: "Done", completionMonth: "January", completionYear: "2023", dueMonth: "", dueYear: "", link: "https://example.com/training1" },
+            { id: 2, name: "Training 2", status: "To Do", completionMonth: "", completionYear: "", dueMonth: "December", dueYear: "2024", link: "https://example.com/training2-due" },
+            { id: 3, name: "Training 3", status: "In Progress", completionMonth: "", completionYear: "", dueMonth: "December", dueYear: "2024", link: "https://example.com/training2-due" },
         ],
     });
     const [showPersonalEditModal, setShowPersonalEditModal] = useState(false);
