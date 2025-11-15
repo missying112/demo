@@ -562,3 +562,78 @@ body {
     right: 15px;
     /* padding, font-size, background-color, color, transition, etc. inherited from .delete-btn */
 }
+
+
+/* Add to existing CSS */
+
+/* Training Table */
+.training-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 0.95em;
+  color: var(--text-color-medium);
+}
+
+.training-table th,
+.training-table td {
+  border: 1px solid var(--border-color-light);
+  padding: 12px 15px; /* Adjust padding for table cells */
+  text-align: left;
+}
+
+.training-table th {
+  background-color: var(--bg-color-light); /* Light background for headers */
+  font-weight: 600;
+  color: var(--text-color-dark);
+}
+
+.training-table tbody tr:nth-child(even) {
+  background-color: #fcfcfc; /* Zebra striping for readability */
+}
+
+.training-table a {
+  color: var(--primary-blue-accent);
+  text-decoration: none;
+}
+
+.training-table a:hover {
+  text-decoration: underline;
+}
+
+/* Training tag for table */
+.training-table .training-tag {
+    font-size: 0.7em; /* Smaller tag in table */
+    padding: 3px 8px; /* Adjusted padding */
+    height: auto; /* Allow height to adjust */
+}
+
+/* Training edit item in modal */
+.training-edit-item-form {
+    border: 1px solid var(--border-color-light);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+    position: relative;
+}
+.training-edit-item-form .form-group label {
+    font-weight: 500;
+    font-size: 0.9em;
+}
+.training-edit-item-form .form-group input[type="text"],
+.training-edit-item-form .form-group select {
+    width: calc(100% - 20px);
+    padding: 8px;
+    font-size: 0.9em;
+}
+.training-edit-item-form .date-inputs select {
+    padding: 8px;
+    font-size: 0.9em;
+}
+
+.training-edit-item-form .delete-btn {
+    position: absolute; /* Changed to absolute for consistent positioning */
+    top: 15px;
+    right: 15px;
+}

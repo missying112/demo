@@ -25,6 +25,23 @@ const months = [
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 100 }, (v, i) => currentYear - i); // 从当前年份往前回溯100年
 
+// 新增辅助函数：格式化单个日期为 "Mon YYYY" (例如 "Jan 2023")
+const formatSingleMonthYear = (month, year) => {
+    if (month && year) {
+        // Find the full month name's index, then use toLocaleDateString for formatting.
+        const monthIndex = months.indexOf(month);
+        if (monthIndex > -1) {
+            // Use 1st day of the month for date object to avoid issues with month lengths
+            const date = new Date(year, monthIndex, 1);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+        }
+        // Fallback if month name is not found (shouldn't happen with controlled dropdowns)
+        return `${month.substring(0, 3)} ${year}`;
+    }
+    return '';
+};
+
+
 const ProfilePage = () => {
     // --- 状态管理 ---
     // 个人信息状态
@@ -53,8 +70,9 @@ const ProfilePage = () => {
         preferredCommunication: "Email",
         // 修改 completedTraining 结构
         completedTraining: [
-            { id: 1, name: "Training 1", status: "completed" },
-            { id: 2, name: "Training 2", status: "not completed" },
+            { id: 1, name: "Training 1", status: "completed", completionMonth: "January", completionYear: "2023", dueMonth: "", dueYear: "", link: "https://example.com/training1" },
+            { id: 2, name: "Training 2", status: "not completed", completionMonth: "", completionYear: "", dueMonth: "December", dueYear: "2024", link: "https://example.com/training2-due" },
+            { id: 3, name: "Training 3", status: "not completed", completionMonth: "", completionYear: "", dueMonth: "", dueYear: "", link: "" },
         ],
     });
     const [showPersonalEditModal, setShowPersonalEditModal] = useState(false);
@@ -122,7 +140,7 @@ const ProfilePage = () => {
             ...personalInfo,
             emails: personalInfo.emails.map(email => ({ ...email }))
         });
-        setEditingTrainings(personalInfo.completedTraining.map(t => ({ ...t }))); // 深拷贝培训列表
+        setEditingTrainings(personalInfo.completedTraining.map(t => ({ ...t }))); // 深拷贝培训列表，包含新字段
         setShowPersonalEditModal(true);
     };
 
@@ -195,7 +213,7 @@ const ProfilePage = () => {
         });
     };
 
-    // 培训信息处理函数
+    // 培训信息处理函数 - UPDATED
     const handleTrainingItemChange = (id, field, value) => {
         setEditingTrainings(prevList =>
             prevList.map(item =>
@@ -207,7 +225,16 @@ const ProfilePage = () => {
     const handleAddTrainingItem = () => {
         setEditingTrainings(prev => [
             ...prev,
-            { id: Date.now(), name: "", status: "not completed" }, // 默认状态
+            {
+                id: Date.now(),
+                name: "",
+                status: "not completed", // 默认状态
+                completionMonth: "",
+                completionYear: "",
+                dueMonth: "",
+                dueYear: "",
+                link: ""
+            },
         ]);
     };
 
@@ -239,7 +266,18 @@ const ProfilePage = () => {
             });
         }
 
-        const cleanedTrainings = editingTrainings.filter(t => t.name.trim() !== ""); // 过滤掉名称为空的培训
+        // Cleaned trainings logic - filter out items without a name.
+        const cleanedTrainings = editingTrainings.filter(t => t.name.trim() !== "").map(t => {
+            return {
+                ...t,
+                completionMonth: t.completionMonth || "",
+                completionYear: t.completionYear || "",
+                dueMonth: t.dueMonth || "",
+                dueYear: t.dueYear || "",
+                link: t.link || ""
+            };
+        });
+
 
         setPersonalInfo({
             ...editingPersonalInfo,
@@ -368,11 +406,11 @@ const ProfilePage = () => {
 
     // 新增辅助函数：格式化工作经验的显示时长
     const formatExperienceDuration = (startMonth, startYear, endMonth, endYear, isCurrentlyWorking) => {
-        const start = (startMonth && startYear) ? `${startMonth} ${startYear}` : '';
+        const start = (startMonth && startYear) ? `${startMonth.substring(0, 3)} ${startYear}` : '';
         if (isCurrentlyWorking) {
             return `${start} - Present`;
         } else if (endMonth && endYear) {
-            const end = `${endMonth} ${endYear}`;
+            const end = `${endMonth.substring(0, 3)} ${endYear}`;
             return `${start} - ${end}`;
         }
         return start;
@@ -380,8 +418,8 @@ const ProfilePage = () => {
 
     // **新增辅助函数：格式化教育经历的显示时长**
     const formatEducationDuration = (startMonth, startYear, endMonth, endYear) => {
-        const start = (startMonth && startYear) ? `${startMonth} ${startYear}` : '';
-        const end = (endMonth && endYear) ? `${endMonth} ${endYear}` : '';
+        const start = (startMonth && startYear) ? `${startMonth.substring(0, 3)} ${startYear}` : '';
+        const end = (endMonth && endYear) ? `${endMonth.substring(0, 3)} ${endYear}` : '';
 
         if (start && end) {
             return `${start} - ${end}`;
@@ -486,16 +524,45 @@ const ProfilePage = () => {
                         </div>
 
 
-                        {/* 修改后的 Training section */}
+                        {/* 修改后的 Training section - UPDATED to Table */}
                         <div className="section">
-                            <h3>Training</h3>
-                            {personalInfo.completedTraining.map((training) => (
-                                <p key={training.id} className="section-text training-display-row">
-                                    {training.name}
-                                    {training.status === "completed" && <span className="training-tag completed">Completed</span>}
-                                    {training.status === "not completed" && <span className="training-tag not-completed">Not Completed</span>}
-                                </p>
-                            ))}
+                            <div className="section-header">
+                                <h3>Training</h3>
+                            </div>
+                            {personalInfo.completedTraining.length > 0 ? (
+                                <table className="training-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Completed On</th>
+                                            <th>Due Date</th>
+                                            <th>Link</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {personalInfo.completedTraining.map((training) => (
+                                            <tr key={training.id}>
+                                                <td>{training.name}</td>
+                                                <td>
+                                                    <span className={`training-tag ${training.status.replace(/\s/g, '-')}`}>
+                                                        {training.status === "completed" ? "Completed" : "Not Completed"}
+                                                    </span>
+                                                </td>
+                                                <td>{formatSingleMonthYear(training.completionMonth, training.completionYear)}</td>
+                                                <td>{formatSingleMonthYear(training.dueMonth, training.dueYear)}</td>
+                                                <td>
+                                                    {training.link ? (
+                                                        <a href={training.link} target="_blank" rel="noopener noreferrer">View Link</a>
+                                                    ) : '-'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p className="section-text">No training records found.</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -611,32 +678,6 @@ const ProfilePage = () => {
                                     Please select the email that <strong>administrators will use to contact you</strong>.<br />
                                 </p>
                             </div>
-
-                            {/* 新增的培训编辑区域 */}
-                            {/* <div className="training-edit-section">
-                                <div className="section-header">
-                                    <h3>Training</h3>
-                                    <button type="button" className="edit-button" aria-label="Add New Training" onClick={handleAddTrainingItem}>+</button>
-                                </div>
-                                {editingTrainings.map(trainingItem => (
-                                    <div key={trainingItem.id} className="training-edit-item">
-                                        <input
-                                            type="text"
-                                            value={trainingItem.name}
-                                            onChange={(e) => handleTrainingItemChange(trainingItem.id, "name", e.target.value)}
-                                            placeholder="Training Name"
-                                        />
-                                        <select
-                                            value={trainingItem.status}
-                                            onChange={(e) => handleTrainingItemChange(trainingItem.id, "status", e.target.value)}
-                                        >
-                                            <option value="completed">Completed</option>
-                                            <option value="not completed">Not Completed</option>
-                                        </select>
-                                        <button type="button" className="delete-btn" onClick={() => handleDeleteTrainingItem(trainingItem.id)}>-</button>
-                                    </div>
-                                ))}
-                            </div> */}
 
 
                             <label>
