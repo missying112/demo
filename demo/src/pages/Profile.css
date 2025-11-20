@@ -541,17 +541,23 @@
 
 /* Delete button - Modern danger style */
 .delete-btn {
-  padding: 8px 14px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   background-color: var(--profile-btn-danger-bg);
   color: white;
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   font-weight: 600;
+  line-height: 1;
   white-space: nowrap;
   transition: all 0.2s ease;
   box-shadow: var(--profile-shadow-sm);
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .delete-btn:hover {
@@ -713,10 +719,18 @@
 /* Delete button positioning in form */
 .edit-item-form .delete-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
 }
 
+@media (max-width: 640px) {
+  .edit-item-form .delete-btn {
+    position: static;
+    margin-top: 16px;
+    width: 100%;
+  }
+}
 
 /* Training Table - Modern design */
 .training-table {
@@ -814,6 +828,15 @@
 
 .training-edit-item-form .delete-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .training-edit-item-form .delete-btn {
+    position: static;
+    margin-top: 16px;
+    width: 100%;
+  }
 }

@@ -25,7 +25,7 @@ export function Sidebar({ userRole }: SidebarProps) {
       show: isAdmin, // Only admin can see admin dashboard
     },
     {
-      title: 'Mentorship 管理',
+      title: 'Mentorship Management',
       href: '/admin/mentorship',
       icon: Settings,
       show: isAdmin, // Only admin can see mentorship management

@@ -63,8 +63,10 @@ export const generateMockUserData = (role: UserRole, isCurrentUser: boolean = fa
   const getMentorshipRole = (): 'mentor' | 'mentee' => {
     if (mustBeMentee(role)) return 'mentee';
     if (canBeMentor(role)) {
-      // Volunteers and Googlers can be either mentor or mentee
-      return Math.random() > 0.3 ? 'mentor' : 'mentee'; // 70% chance to be mentor
+      // For current user (demo purposes), make them mentor to show mentor features
+      if (isCurrentUser) return 'mentor';
+      // For other volunteers and Googlers, 70% chance to be mentor
+      return Math.random() > 0.3 ? 'mentor' : 'mentee';
     }
     return 'mentee'; // Default to mentee
   };
@@ -182,6 +184,11 @@ export const generateMockDataset = (): UserData[] => {
 
 export const currentUserData = generateMockUserData('circlecat_employee', true);
 
+// Function to get user data based on role
+export const getUserDataByRole = (role: UserRole): UserData => {
+  return generateMockUserData(role, true);
+};
+
 export const mentorshipRounds: MentorshipRound[] = [
   {
     id: 'round-2024-fall',
@@ -190,6 +197,13 @@ export const mentorshipRounds: MentorshipRound[] = [
     endDate: '2024-12-31',
     status: 'active',
     requiredMeetings: 8,
+    phases: {
+      registration: '2024-08-15',
+      matching: '2024-08-25',
+      inProgress: '2024-12-15',
+      summary: '2024-12-25',
+      completed: '2024-12-31',
+    },
   },
   {
     id: 'round-2026-spring',
@@ -198,6 +212,13 @@ export const mentorshipRounds: MentorshipRound[] = [
     endDate: '2026-06-30',
     status: 'completed', // Using 'completed' status to indicate future round (not active yet)
     requiredMeetings: 8,
+    phases: {
+      registration: '2026-02-15',
+      matching: '2026-02-25',
+      inProgress: '2026-06-15',
+      summary: '2026-06-25',
+      completed: '2026-06-30',
+    },
   },
   {
     id: 'round-2024-spring',
@@ -206,6 +227,13 @@ export const mentorshipRounds: MentorshipRound[] = [
     endDate: '2024-06-30',
     status: 'completed',
     requiredMeetings: 6,
+    phases: {
+      registration: '2024-02-15',
+      matching: '2024-02-25',
+      inProgress: '2024-06-15',
+      summary: '2024-06-25',
+      completed: '2024-06-30',
+    },
   },
   {
     id: 'round-2023-fall',
@@ -214,5 +242,12 @@ export const mentorshipRounds: MentorshipRound[] = [
     endDate: '2023-12-31',
     status: 'completed',
     requiredMeetings: 8,
+    phases: {
+      registration: '2023-08-15',
+      matching: '2023-08-25',
+      inProgress: '2023-12-15',
+      summary: '2023-12-25',
+      completed: '2023-12-31',
+    },
   },
 ];

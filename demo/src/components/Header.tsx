@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -6,7 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Building2, User } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { User, Mail } from 'lucide-react';
 import logo from "../assets/logo.png";
 
 interface HeaderProps {
@@ -14,8 +16,9 @@ interface HeaderProps {
   userRole?: string;
 }
 
-export function Header({ userName = '用户', userRole = 'Employee' }: HeaderProps) {
+export function Header({ userName = 'User', userRole = 'Employee' }: HeaderProps) {
   const navigate = useNavigate();
+  const [contactOpen, setContactOpen] = useState(false);
 
   // Get initials from userName
   const initials = userName
@@ -32,7 +35,6 @@ export function Header({ userName = '用户', userRole = 'Employee' }: HeaderPro
         <div className="flex items-center gap-3">
           <img src={logo} alt="Purrf Logo" className="h-6 w-6 text-white" />
           <div>
-
             <div className="text-sm font-semibold text-gray-900">CircleCat</div>
             <div className="text-xs text-gray-500 font-medium">Purrf</div>
           </div>
@@ -56,6 +58,7 @@ export function Header({ userName = '用户', userRole = 'Employee' }: HeaderPro
                 </Avatar>
               </button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem
                 onClick={() => navigate('/profile')}
@@ -64,10 +67,41 @@ export function Header({ userName = '用户', userRole = 'Employee' }: HeaderPro
                 <User className="mr-2 h-4 w-4" />
                 <span>View Profile</span>
               </DropdownMenuItem>
+
+              {/* Contact Us → Open Modal */}
+              <DropdownMenuItem
+                onClick={() => setContactOpen(true)}
+                className="cursor-pointer"
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                <span>Contact Us</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
+
+      {/* Contact Us Modal */}
+      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Contact Administrators</DialogTitle>
+            <DialogDescription>
+              If you need support, please contact our admins:
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 space-y-2">
+            <p className="font-medium text-sm">Admin Email:</p>
+            <a
+              href="mailto:admin@circlecat.org"
+              className="text-blue-600 underline text-sm"
+            >
+              admin@circlecat.org
+            </a>
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

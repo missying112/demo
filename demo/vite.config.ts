@@ -5,22 +5,6 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    host: true,
-    hmr: true,
-    port: 5173,
-    proxy: {
-      "/api": {
-        target: "http://localhost:5001",
-        changeOrigin: true,
-      },
-    },
-    // Set up your coding workspace host.
-    allowedHosts: [""],
-    watch: {
-      usePolling: true,
-    },
-  },
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
@@ -68,5 +52,21 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'build',
+  },
+  server: {
+    host: true,
+    hmr: true,
+    port: 5173,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5001",
+        changeOrigin: true,
+      },
+    },
+    // Set up your coding workspace host.
+    allowedHosts: [""],
+    watch: {
+      usePolling: true,
+    },
   },
 });

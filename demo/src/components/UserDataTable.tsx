@@ -133,6 +133,7 @@ export function UserDataTable({ users }: UserDataTableProps) {
       mergedLoc: 0,
       meetingHours: 0,
       chatMessages: 0,
+      mentorshipRounds: 0,
     };
 
     filteredAndSortedUsers.forEach(user => {
@@ -141,6 +142,7 @@ export function UserDataTable({ users }: UserDataTableProps) {
       stats.mergedLoc += user.activityMetrics.mergedLoc;
       stats.meetingHours += user.activityMetrics.meetingHours;
       stats.chatMessages += user.activityMetrics.chatMessages;
+      stats.mentorshipRounds += user.mentorshipParticipation.length;
     });
 
     return stats;
@@ -180,7 +182,7 @@ export function UserDataTable({ users }: UserDataTableProps) {
           {user.ldap}
           {user.isTerminated && (
             <Badge variant="destructive" className="ml-2 text-xs">
-              已离职
+              Terminated
             </Badge>
           )}
         </TableCell>
@@ -195,11 +197,9 @@ export function UserDataTable({ users }: UserDataTableProps) {
         <TableCell className="text-right">{user.activityMetrics.chatMessages}</TableCell>
         <TableCell className="text-center">
           {user.mentorshipParticipation.length > 0 ? (
-            <Badge variant="outline">
-              {user.mentorshipParticipation.length} 个项目
-            </Badge>
+            user.mentorshipParticipation.length
           ) : (
-            <span className="text-gray-400 text-sm">无</span>
+            <span className="text-gray-400 text-sm">-</span>
           )}
         </TableCell>
       </TableRow>
@@ -209,12 +209,12 @@ export function UserDataTable({ users }: UserDataTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>用户详细数据表</CardTitle>
+        <CardTitle>Detailed User Data Table</CardTitle>
         <div className="flex items-center justify-between gap-4 mt-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Search className="h-4 w-4 text-gray-400" />
             <Input
-              placeholder="搜索 LDAP 或用户名..."
+              placeholder="Search LDAP or Username..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
@@ -223,7 +223,7 @@ export function UserDataTable({ users }: UserDataTableProps) {
           
           <div className="flex items-center gap-6 flex-wrap">
             <div className="flex items-center gap-2">
-              <Label className="text-sm text-gray-600">显示分组:</Label>
+              <Label className="text-sm text-gray-600">Show Groups:</Label>
               <div className="flex items-center gap-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox 
@@ -275,7 +275,7 @@ export function UserDataTable({ users }: UserDataTableProps) {
         {/* Summary Statistics */}
         {filteredAndSortedUsers.length > 0 && (
           <div className="mb-4 p-4 bg-[#6035F3]/5 rounded-lg border border-[#6035F3]/20">
-            <h4 className="text-sm mb-3 text-[#6035F3]">工作活动汇总</h4>
+            <h4 className="text-sm mb-3 text-[#6035F3]">Work Activity Summary</h4>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div>
                 <div className="text-xs text-gray-600">Jira Tickets</div>
@@ -297,6 +297,10 @@ export function UserDataTable({ users }: UserDataTableProps) {
                 <div className="text-xs text-gray-600">Chat Messages</div>
                 <div className="text-xl mt-1">{summaryStats.chatMessages}</div>
               </div>
+              <div>
+                <div className="text-xs text-gray-600">Mentorship Rounds</div>
+                <div className="text-xl mt-1">{summaryStats.mentorshipRounds}</div>
+              </div>
             </div>
           </div>
         )}
@@ -309,10 +313,10 @@ export function UserDataTable({ users }: UserDataTableProps) {
                   <SortButton field="ldap">LDAP</SortButton>
                 </TableHead>
                 <TableHead>
-                  <SortButton field="name">用户名</SortButton>
+                  <SortButton field="name">Username</SortButton>
                 </TableHead>
                 <TableHead>
-                  <SortButton field="role">角色</SortButton>
+                  <SortButton field="role">Role</SortButton>
                 </TableHead>
                 <TableHead className="text-right">
                   <SortButton field="jiraTickets">Jira Tickets</SortButton>
@@ -325,14 +329,14 @@ export function UserDataTable({ users }: UserDataTableProps) {
                   <SortButton field="meetingHours">Meeting Hours</SortButton>
                 </TableHead>
                 <TableHead className="text-right">Chat Messages</TableHead>
-                <TableHead className="text-center">导师项目</TableHead>
+                <TableHead className="text-center">Mentorship</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAndSortedUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center py-8 text-gray-500">
-                    没有找到匹配的用户
+                    No matching users found
                   </TableCell>
                 </TableRow>
               ) : (
@@ -381,7 +385,7 @@ export function UserDataTable({ users }: UserDataTableProps) {
           </Table>
         </div>
         <div className="mt-4 text-sm text-gray-600">
-          显示 {filteredAndSortedUsers.length} / {users.length} 个用户
+          Showing {filteredAndSortedUsers.length} / {users.length} users
         </div>
       </CardContent>
     </Card>

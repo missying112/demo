@@ -15,7 +15,7 @@ interface ActivityMetricsCardProps {
   title?: string;
 }
 
-export function ActivityMetricsCard({ metrics, title = '工作活动数据' }: ActivityMetricsCardProps) {
+export function ActivityMetricsCard({ metrics, title = 'Work Activity Data' }: ActivityMetricsCardProps) {
   const [dateRange, setDateRange] = useState<DateRange>({
     start: '2024-01-01',
     end: '2024-12-31',

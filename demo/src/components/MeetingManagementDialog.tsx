@@ -65,18 +65,18 @@ export function MeetingManagementDialog({
 
   const handleSchedule = () => {
     if (!selectedDate || !selectedTime || !selectedPartnerEmail) {
-      toast.error('请填写所有必填字段');
+      toast.error('Please fill in all required fields');
       return;
     }
 
     const partner = allPartners.find((p) => p.email === selectedPartnerEmail);
     if (!partner) {
-      toast.error('未找到选中的联系人');
+      toast.error('Selected contact not found');
       return;
     }
 
     onScheduleMeeting(selectedPartnerEmail, partner.name, selectedDate, selectedTime, selectedDuration);
-    toast.success('会议预约成功！');
+    toast.success('Meeting scheduled successfully!');
     
     // Reset form
     setSelectedDate(undefined);
@@ -87,7 +87,7 @@ export function MeetingManagementDialog({
 
   const handleCancel = (meetingId: string) => {
     onCancelMeeting(meetingId);
-    toast.success('会议已Cancel');
+    toast.success('Meeting cancelled');
   };
 
   // Get all meetings grouped by status
@@ -119,7 +119,7 @@ export function MeetingManagementDialog({
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>会议管理</DialogTitle>
+          <DialogTitle>Meeting Management</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="schedule" className="w-full">
@@ -136,11 +136,11 @@ export function MeetingManagementDialog({
                 <Label>Select Mentor/Mentee Email</Label>
                 <Select value={selectedPartnerEmail} onValueChange={setSelectedPartnerEmail}>
                   <SelectTrigger>
-                    <SelectValue placeholder="选择一个联系人" />
+                    <SelectValue placeholder="Select a contact" />
                   </SelectTrigger>
                   <SelectContent>
                     {allPartners.length === 0 ? (
-                      <div className="p-2 text-sm text-gray-500">暂无可预约的联系人</div>
+                      <div className="p-2 text-sm text-gray-500">No contacts available</div>
                     ) : (
                       allPartners.map((partner, index) => (
                         <SelectItem key={`${partner.email}-${index}`} value={partner.email}>
@@ -148,7 +148,7 @@ export function MeetingManagementDialog({
                             <span>{partner.name}</span>
                             <span className="text-gray-500 text-sm">({partner.email})</span>
                             <Badge variant="outline" className="ml-2">
-                              {partner.role === 'mentor' ? '导师' : '学员'}
+                              {partner.role === 'mentor' ? 'Mentor' : 'Mentee'}
                             </Badge>
                           </div>
                         </SelectItem>
@@ -200,7 +200,7 @@ export function MeetingManagementDialog({
                       <SelectContent>
                         {durationOptions.map((duration) => (
                           <SelectItem key={duration} value={duration.toString()}>
-                            {duration} 分钟
+                            {duration} minutes
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -225,7 +225,7 @@ export function MeetingManagementDialog({
             {upcomingMeetings.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                <p>暂无Upcoming的会议</p>
+                <p>No upcoming meetings</p>
               </div>
             ) : (
               upcomingMeetings.map((meeting) => (
@@ -247,7 +247,7 @@ export function MeetingManagementDialog({
                         </div>
                         <div className="flex items-center gap-1">
                           <Timer className="h-4 w-4" />
-                          {meeting.duration} 分钟
+                          {meeting.duration} minutes
                         </div>
                       </div>
                     </div>
@@ -270,7 +270,7 @@ export function MeetingManagementDialog({
             {completedMeetings.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <Check className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                <p>暂无Completed的会议</p>
+                <p>No completed meetings</p>
               </div>
             ) : (
               completedMeetings.map((meeting) => (
@@ -294,7 +294,7 @@ export function MeetingManagementDialog({
                       </div>
                       <div className="flex items-center gap-1">
                         <Timer className="h-4 w-4" />
-                        {meeting.duration} 分钟
+                        {meeting.duration} minutes
                       </div>
                     </div>
                   </div>

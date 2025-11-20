@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { Plus, Pencil, Trash2, Calendar, Users } from 'lucide-react';
+import { Plus, Pencil, Trash2, Calendar, Users, Clock } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { MentorshipRound } from '../types/dashboard';
 import { mentorshipRounds as initialRounds } from '../utils/mockData';
@@ -16,12 +16,32 @@ export function MentorshipManagementPage() {
   const [rounds, setRounds] = useState<MentorshipRound[]>(initialRounds);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRound, setEditingRound] = useState<MentorshipRound | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    startDate: string;
+    endDate: string;
+    status: 'active' | 'completed';
+    requiredMeetings: number;
+    phases: {
+      registration: string;
+      matching: string;
+      inProgress: string;
+      summary: string;
+      completed: string;
+    };
+  }>({
     name: '',
     startDate: '',
     endDate: '',
-    status: 'active' as 'active' | 'completed',
+    status: 'active',
     requiredMeetings: 8,
+    phases: {
+      registration: '',
+      matching: '',
+      inProgress: '',
+      summary: '',
+      completed: '',
+    },
   });
 
   const handleOpenDialog = (round?: MentorshipRound) => {
@@ -33,6 +53,7 @@ export function MentorshipManagementPage() {
         endDate: round.endDate,
         status: round.status,
         requiredMeetings: round.requiredMeetings,
+        phases: round.phases,
       });
     } else {
       setEditingRound(null);
@@ -42,6 +63,13 @@ export function MentorshipManagementPage() {
         endDate: '',
         status: 'active',
         requiredMeetings: 8,
+        phases: {
+          registration: '',
+          matching: '',
+          inProgress: '',
+          summary: '',
+          completed: '',
+        },
       });
     }
     setIsDialogOpen(true);
@@ -55,20 +83,46 @@ export function MentorshipManagementPage() {
   const handleSave = () => {
     // Validation
     if (!formData.name.trim()) {
-      toast.error('请输入轮次名称');
+      toast.error('Please enter round name');
       return;
     }
     if (!formData.startDate || !formData.endDate) {
-      toast.error('请选择开始时间和结束时间');
+      toast.error('Please select start date and end date');
       return;
     }
     if (new Date(formData.startDate) >= new Date(formData.endDate)) {
-      toast.error('结束时间必须晚于开始时间');
+      toast.error('End date must be after start date');
       return;
     }
     if (formData.requiredMeetings < 1) {
-      toast.error('应完成会议次数必须大于0');
+      toast.error('Required meetings must be greater than 0');
       return;
+    }
+
+    // Validate phase deadlines
+    const phaseKeys = ['registration', 'matching', 'inProgress', 'summary', 'completed'] as const;
+    const phaseLabels: Record<typeof phaseKeys[number], string> = {
+      registration: 'Registration',
+      matching: 'Matching',
+      inProgress: 'In Progress',
+      summary: 'Summary',
+      completed: 'Completed',
+    };
+
+    for (const key of phaseKeys) {
+      if (!formData.phases[key]) {
+        toast.error(`Please set ${phaseLabels[key]} deadline`);
+        return;
+      }
+    }
+
+    // Validate phase deadlines are in order
+    const phaseDates = phaseKeys.map(key => new Date(formData.phases[key]));
+    for (let i = 1; i < phaseDates.length; i++) {
+      if (phaseDates[i] <= phaseDates[i - 1]) {
+        toast.error(`${phaseLabels[phaseKeys[i]]} deadline must be after ${phaseLabels[phaseKeys[i - 1]]} deadline`);
+        return;
+      }
     }
 
     if (editingRound) {
@@ -78,7 +132,7 @@ export function MentorshipManagementPage() {
           ? { ...round, ...formData }
           : round
       ));
-      toast.success('轮次信息已更新');
+      toast.success('Round information updated');
     } else {
       // Create new round
       const newRound: MentorshipRound = {
@@ -86,22 +140,37 @@ export function MentorshipManagementPage() {
         ...formData,
       };
       setRounds([newRound, ...rounds]);
-      toast.success('新轮次已创建');
+      toast.success('New round created');
     }
 
     handleCloseDialog();
   };
 
   const handleDelete = (round: MentorshipRound) => {
-    if (window.confirm(`确定要删除 "${round.name}" 吗？此操作无法撤销。`)) {
+    if (window.confirm(`Are you sure you want to delete "${round.name}"? This action cannot be undone.`)) {
       setRounds(rounds.filter(r => r.id !== round.id));
-      toast.success('轮次已删除');
+      toast.success('Round deleted');
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const formatShortDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const updatePhaseDeadline = (phase: keyof typeof formData.phases, value: string) => {
+    setFormData({
+      ...formData,
+      phases: {
+        ...formData.phases,
+        [phase]: value,
+      },
+    });
   };
 
   return (
@@ -110,16 +179,16 @@ export function MentorshipManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900" style={{ color: '#171717' }}>
-            Mentorship 轮次管理
+            Mentorship Round Management
           </h1>
-          <p className="text-gray-600 mt-2">管理所有导师项目轮次的基本信息和要求</p>
+          <p className="text-gray-600 mt-2">Manage all mentorship program rounds' basic information and requirements</p>
         </div>
         <Button
           onClick={() => handleOpenDialog()}
           className="bg-[#6035F3] hover:bg-[#4A28C4] text-white shadow-md hover:shadow-lg transition-all"
         >
           <Plus className="h-4 w-4 mr-2" />
-          创建新轮次
+          Create New Round
         </Button>
       </div>
 
@@ -127,7 +196,7 @@ export function MentorshipManagementPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">总轮次数</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">Total Rounds</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
@@ -141,7 +210,7 @@ export function MentorshipManagementPage() {
 
         <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">进行中</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">Active</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
@@ -175,27 +244,27 @@ export function MentorshipManagementPage() {
       {/* Rounds Table */}
       <Card className="border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-900">所有轮次</CardTitle>
-          <CardDescription>查看和管理所有 Mentorship 项目轮次</CardDescription>
+          <CardTitle className="text-xl font-semibold text-gray-900">All Rounds</CardTitle>
+          <CardDescription>View and manage all Mentorship program rounds</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-gray-200 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50 hover:bg-gray-50">
-                  <TableHead className="font-semibold text-gray-700">轮次名称</TableHead>
-                  <TableHead className="font-semibold text-gray-700">开始时间</TableHead>
-                  <TableHead className="font-semibold text-gray-700">结束时间</TableHead>
-                  <TableHead className="font-semibold text-gray-700">应完成会议次数</TableHead>
-                  <TableHead className="font-semibold text-gray-700">状态</TableHead>
-                  <TableHead className="font-semibold text-gray-700 text-right">操作</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Round Name</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Start Date</TableHead>
+                  <TableHead className="font-semibold text-gray-700">End Date</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Required Meetings</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Status</TableHead>
+                  <TableHead className="font-semibold text-gray-700 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {rounds.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-12 text-gray-500">
-                      暂无轮次数据，点击上方按钮创建第一个轮次
+                      No rounds data. Click the button above to create the first round
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -208,7 +277,7 @@ export function MentorshipManagementPage() {
                       <TableCell className="text-gray-600">{formatDate(round.startDate)}</TableCell>
                       <TableCell className="text-gray-600">{formatDate(round.endDate)}</TableCell>
                       <TableCell className="text-gray-900 font-semibold">
-                        {round.requiredMeetings} 次
+                        {round.requiredMeetings} times
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -218,7 +287,7 @@ export function MentorshipManagementPage() {
                             color: round.status === 'active' ? '#065F46' : '#525252',
                           }}
                         >
-                          {round.status === 'active' ? '进行中' : 'Completed'}
+                          {round.status === 'active' ? 'Active' : 'Completed'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -252,15 +321,15 @@ export function MentorshipManagementPage() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] bg-white border-gray-200">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white border-gray-200">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-900">
-              {editingRound ? '编辑轮次' : '创建新轮次'}
+              {editingRound ? 'Edit Round' : 'Create New Round'}
             </DialogTitle>
             <DialogDescription className="text-gray-600">
               {editingRound
-                ? '修改 Mentorship 轮次的基本信息'
-                : '填写新 Mentorship 轮次的基本信息'}
+                ? 'Modify the basic information of the Mentorship round'
+                : 'Fill in the basic information for a new Mentorship round'}
             </DialogDescription>
           </DialogHeader>
 
@@ -268,11 +337,11 @@ export function MentorshipManagementPage() {
             {/* Round Name */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
-                轮次名称 <span className="text-red-500">*</span>
+                Round Name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="name"
-                placeholder="例如：2025年春季"
+                placeholder="e.g., Spring-2025"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
@@ -280,10 +349,10 @@ export function MentorshipManagementPage() {
             </div>
 
             {/* Date Range */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="startDate" className="text-sm font-semibold text-gray-700">
-                  开始时间 <span className="text-red-500">*</span>
+                  Start Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="startDate"
@@ -296,7 +365,7 @@ export function MentorshipManagementPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="endDate" className="text-sm font-semibold text-gray-700">
-                  结束时间 <span className="text-red-500">*</span>
+                  End Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="endDate"
@@ -306,12 +375,12 @@ export function MentorshipManagementPage() {
                   className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Required Meetings */}
             <div className="space-y-2">
               <Label htmlFor="requiredMeetings" className="text-sm font-semibold text-gray-700">
-                应完成会议次数 <span className="text-red-500">*</span>
+                Required Meetings <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="requiredMeetings"
@@ -325,14 +394,14 @@ export function MentorshipManagementPage() {
                 className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
               />
               <p className="text-sm text-gray-500">
-                参与者需要完成的最少会议次数
+                Minimum number of meetings participants need to complete
               </p>
             </div>
 
             {/* Status */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="status" className="text-sm font-semibold text-gray-700">
-                状态
+                Status
               </Label>
               <Select
                 value={formData.status}
@@ -344,10 +413,123 @@ export function MentorshipManagementPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">进行中</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
+            </div> */}
+
+            {/* Phase Deadlines Table */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-[#6035F3]" />
+                <Label className="text-sm font-semibold text-gray-700">
+                  Phase Deadlines <span className="text-red-500">*</span>
+                </Label>
+              </div>
+              <p className="text-sm text-gray-500">
+                Set the deadline for each phase of the mentorship round
+              </p>
+              
+              <div className="rounded-lg border border-gray-200 overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 hover:bg-gray-50">
+                      <TableHead className="font-semibold text-gray-700 w-1/3">Phase</TableHead>
+                      <TableHead className="font-semibold text-gray-700">Deadline</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow className="hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                          Registration
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="date"
+                          value={formData.phases.registration}
+                          onChange={(e) => updatePhaseDeadline('registration', e.target.value)}
+                          className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
+                        />
+                      </TableCell>
+                    </TableRow>
+                    
+                    <TableRow className="hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                          Matching
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="date"
+                          value={formData.phases.matching}
+                          onChange={(e) => updatePhaseDeadline('matching', e.target.value)}
+                          className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
+                        />
+                      </TableCell>
+                    </TableRow>
+                    
+                    <TableRow className="hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          In Progress
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="date"
+                          value={formData.phases.inProgress}
+                          onChange={(e) => updatePhaseDeadline('inProgress', e.target.value)}
+                          className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
+                        />
+                      </TableCell>
+                    </TableRow>
+                    
+                    <TableRow className="hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                          Summary
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="date"
+                          value={formData.phases.summary}
+                          onChange={(e) => updatePhaseDeadline('summary', e.target.value)}
+                          className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
+                        />
+                      </TableCell>
+                    </TableRow>
+                    
+                    <TableRow className="hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                          Completed
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="date"
+                          value={formData.phases.completed}
+                          onChange={(e) => updatePhaseDeadline('completed', e.target.value)}
+                          className="border-gray-300 focus:border-[#6035F3] focus:ring-[#6035F3]"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+              <p className="text-sm text-gray-500">
+                Note: Each phase deadline must be later than the previous phase
+              </p>
             </div>
           </div>
 
@@ -365,7 +547,7 @@ export function MentorshipManagementPage() {
               onClick={handleSave}
               className="bg-[#6035F3] hover:bg-[#4A28C4] text-white shadow-md"
             >
-              {editingRound ? '保存修改' : '创建轮次'}
+              {editingRound ? 'Save Changes' : 'Create Round'}
             </Button>
           </DialogFooter>
         </DialogContent>

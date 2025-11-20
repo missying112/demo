@@ -84,7 +84,7 @@ export function PersonalDashboard({ userData }: PersonalDashboardProps) {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl mb-2">Personal Dashboard</h1>
-          <p className="text-gray-600">Welcome back，{userData.name}</p>
+          <p className="text-gray-600">Welcome back, {userData.name}</p>
         </div>
         
         <MeetingManagementDialog
@@ -121,6 +121,7 @@ export function PersonalDashboard({ userData }: PersonalDashboardProps) {
                   currentRegistration={activeParticipation.registration}
                   isLocked={!isInRegistrationPeriod}
                   onSave={handleSaveRegistration}
+                  currentPartnerNames={activeParticipation.partnerNames}
                 />
                 
                 <Button
@@ -137,17 +138,6 @@ export function PersonalDashboard({ userData }: PersonalDashboardProps) {
                     Submit Mentorship Feedback
                   </a>
                 </Button>
-
-                {activeParticipation.registration && (
-                  <div className="ml-auto flex items-center gap-2">
-                    <Badge className="bg-purple-100 text-[#6035F3] border-purple-200">
-                      {activeParticipation.role === 'mentor' ? '导师' : '学员'}
-                    </Badge>
-                    <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                      {activeParticipation.registration.industry}
-                    </Badge>
-                  </div>
-                )}
               </div>
             </div>
           </CardContent>

@@ -1,7 +1,7 @@
 import { PersonalDashboard } from '../components/PersonalDashboard';
 import { MentorshipOnlyDashboard } from '../components/MentorshipOnlyDashboard';
 import { UserRole } from '../types/dashboard';
-import { currentUserData } from '../utils/mockData';
+import { getUserDataByRole } from '../utils/mockData';
 import { Shield } from 'lucide-react';
 
 interface DashboardPageProps {
@@ -13,10 +13,8 @@ export function DashboardPage({ userRole }: DashboardPageProps) {
   const canViewPersonal = ['circlecat_employee', 'circlecat_intern', 'circlecat_volunteer', 'admin'].includes(userRole);
   const canViewMentorshipOnly = ['googler', 'external_mentee'].includes(userRole);
 
-  const userData = {
-    ...currentUserData,
-    role: userRole,
-  };
+  // Generate user data based on current role
+  const userData = getUserDataByRole(userRole);
 
   if (canViewPersonal) {
     return <PersonalDashboard userData={userData} />;
@@ -29,11 +27,11 @@ export function DashboardPage({ userRole }: DashboardPageProps) {
   return (
     <div className="bg-white rounded-lg shadow p-12 text-center">
       <Shield className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-      <h2 className="text-2xl mb-2">权限不足</h2>
+      <h2 className="text-2xl mb-2">Insufficient Permissions</h2>
       <p className="text-gray-600">
-        当前角色 ({userRole}) 没有访问仪表盘的权限。
+        Current role ({userRole}) does not have access to the dashboard.
         <br />
-        请联系管理员获取相应权限。
+        Please contact administrator for appropriate permissions.
       </p>
     </div>
   );

@@ -116,7 +116,7 @@ export function MentorshipParticipantsCard({ allUsers, selectedRound }: Mentorsh
   return (
     <Card>
       <CardHeader>
-        <CardTitle>导师活动参与者分析</CardTitle>
+        <CardTitle>Mentorship Participants Analysis</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Chart - Stacked Bar Chart */}
@@ -136,24 +136,24 @@ export function MentorshipParticipantsCard({ allUsers, selectedRound }: Mentorsh
 
         {/* Participants Table */}
         <div>
-          <h3 className="mb-3">参与者列表</h3>
+          <h3 className="mb-3">Participants List</h3>
           <ScrollArea className="h-[400px] rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>姓名</TableHead>
+                  <TableHead>Name</TableHead>
                   <TableHead>LDAP</TableHead>
-                  <TableHead>用户类型</TableHead>
-                  <TableHead>角色</TableHead>
-                  <TableHead className="text-right">Mentor 次数</TableHead>
-                  <TableHead className="text-right">Mentee 次数</TableHead>
+                  <TableHead>User Type</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead className="text-right">Mentor Count</TableHead>
+                  <TableHead className="text-right">Mentee Count</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {participantData.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-gray-500">
-                      暂无参与者数据
+                      No participant data
                     </TableCell>
                   </TableRow>
                 ) : (

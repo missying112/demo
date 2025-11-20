@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import "@/pages/Profile.css"; // 确保此CSS文件存在并已链接
 
 // 辅助函数：格式化日期为 "Mon YYYY" (例如 "Sep 2013")
@@ -391,6 +391,23 @@ const ProfilePage = ({ userRole = 'circlecat_employee' }: ProfilePageProps) => {
         return '';
     };
 
+    // Sort education list by end date (most recent first)
+    const sortedEducationList = useMemo(() => {
+        return [...educationList].sort((a, b) => {
+            // Convert dates to comparable values
+            const aYear = parseInt(a.endYear) || 0;
+            const bYear = parseInt(b.endYear) || 0;
+            const aMonth = months.indexOf(a.endMonth) + 1 || 0;
+            const bMonth = months.indexOf(b.endMonth) + 1 || 0;
+
+            // Compare years first (descending)
+            if (aYear !== bYear) {
+                return bYear - aYear;
+            }
+            // If years are equal, compare months (descending)
+            return bMonth - aMonth;
+        });
+    }, [educationList]);
 
     return (
         <div className="profile-page-container">
@@ -416,11 +433,6 @@ const ProfilePage = ({ userRole = 'circlecat_employee' }: ProfilePageProps) => {
                         </h1>
                         <p className="user-title">
                             {personalInfo.title} <span className="at-company">at {personalInfo.company}</span>
-                        </p>
-                        {/* Debug info - can be removed later */}
-                        <p style={{ fontSize: '0.8em', color: '#888', marginTop: '10px' }}>
-                            Current Role: <strong>{userRole}</strong>
-                            {userRole === 'googler' && ' (Preferred Communication Method will be shown in Edit Profile)'}
                         </p>
                     </div>
                 </div>
@@ -474,7 +486,7 @@ const ProfilePage = ({ userRole = 'circlecat_employee' }: ProfilePageProps) => {
                                 </button>
                             </div>
                             <div className="education-list">
-                                {educationList.map((edu) => (
+                                {sortedEducationList.map((edu) => (
                                     <div key={edu.id} className="education-list-item">
                                         <h6>{edu.institution}</h6>
                                         <p>{edu.degree}'s degree, {edu.field}</p>

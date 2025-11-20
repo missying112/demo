@@ -29,6 +29,8 @@ export interface MentorshipRegistration {
   skillsets: string[]; // Up to 3 skillsets to focus on
   menteeCapacity?: number; // Only for mentors: how many mentees they can mentor
   goal?: string; // Personal goal for this round (max 200 chars)
+  mentorPreference?: 'continue' | 'different' | 'no-preference'; // Preference for next round mentor/mentee matching
+  continueMenteeNames?: string[]; // For mentors only: specific mentee names they want to continue with
 }
 
 export interface MentorshipParticipation {
@@ -65,6 +67,13 @@ export interface MentorshipRound {
   endDate: string;
   status: 'active' | 'completed';
   requiredMeetings: number; // Number of meetings required to complete this round
+  phases: {
+    registration: string; // Registration deadline
+    matching: string; // Matching deadline
+    inProgress: string; // In Progress (mentorship period) deadline
+    summary: string; // Summary deadline
+    completed: string; // Completion deadline
+  };
 }
 
 export interface MentorshipPair {

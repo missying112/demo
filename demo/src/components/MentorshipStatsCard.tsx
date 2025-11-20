@@ -56,25 +56,25 @@ export function MentorshipStatsCard({ allUsers, selectedRound, onRoundChange }: 
   }, [allUsers, selectedRound]);
   const stats = [
     {
-      label: '参与人数',
+      label: 'Total Participants',
       value: mentorshipStats.totalParticipants,
       icon: Users,
       color: 'bg-[#6035F3]',
     },
     {
-      label: '导师学员匹配对',
+      label: 'Mentor-Mentee Pairs',
       value: mentorshipStats.totalPairs,
       icon: UserCheck,
       color: 'bg-[#7C5CF5]',
     },
     {
-      label: 'Completed会议',
+      label: 'Completed Meetings',
       value: mentorshipStats.completedMeetings,
       icon: Calendar,
       color: 'bg-[#9883F7]',
     },
     {
-      label: '累计会议时长（小时）',
+      label: 'Total Meeting Hours',
       value: mentorshipStats.totalMeetingHours,
       icon: Clock,
       color: 'bg-[#4E2AC4]',
@@ -85,18 +85,18 @@ export function MentorshipStatsCard({ allUsers, selectedRound, onRoundChange }: 
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <CardTitle>导师活动统计</CardTitle>
+          <CardTitle>Mentorship Activity Statistics</CardTitle>
           <div className="flex items-center gap-3">
-            <Label htmlFor="round-select" className="text-sm">选择轮次:</Label>
+            <Label htmlFor="round-select" className="text-sm">Select Round:</Label>
             <Select value={selectedRound} onValueChange={onRoundChange}>
               <SelectTrigger id="round-select" className="w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">所有轮次</SelectItem>
+                <SelectItem value="all">All Rounds</SelectItem>
                 {mentorshipRounds.map((round) => (
                   <SelectItem key={round.id} value={round.id}>
-                    {round.name} {round.status === 'active' && '(当前)'}
+                    {round.name} {round.status === 'active' && '(Current)'}
                   </SelectItem>
                 ))}
               </SelectContent>

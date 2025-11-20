@@ -39,7 +39,7 @@ export function DateRangeFilter({ dateRange, onDateRangeChange }: DateRangeFilte
   return (
     <div className="flex items-center gap-4">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600">开始日期:</span>
+        <span className="text-sm text-gray-600">Start Date:</span>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-[200px] justify-start">
@@ -59,7 +59,7 @@ export function DateRangeFilter({ dateRange, onDateRangeChange }: DateRangeFilte
       </div>
       
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600">结束日期:</span>
+        <span className="text-sm text-gray-600">End Date:</span>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-[200px] justify-start">
