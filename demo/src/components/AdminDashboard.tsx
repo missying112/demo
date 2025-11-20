@@ -13,10 +13,10 @@ export function AdminDashboard({ allUsers }: AdminDashboardProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl mb-2">Admin Dashboard</h1>
-        <p className="text-gray-600">View all users' mentorship activity data</p>
-      </div>
+      {/* <div> */}
+        {/* <h1 className="text-3xl mb-2">Admin Dashboard</h1> */}
+        {/* <p className="text-gray-600">View all users' mentorship activity data</p> */}
+      {/* </div> */}
 
       {/* Mentorship Stats */}
       <MentorshipStatsCard 

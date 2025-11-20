@@ -176,7 +176,7 @@ export function MentorshipManagementPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900" style={{ color: '#171717' }}>
             Mentorship Round Management
@@ -190,7 +190,7 @@ export function MentorshipManagementPage() {
           <Plus className="h-4 w-4 mr-2" />
           Create New Round
         </Button>
-      </div>
+      </div> */}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -242,10 +242,22 @@ export function MentorshipManagementPage() {
       </div>
 
       {/* Rounds Table */}
-      <Card className="border-gray-200 shadow-sm">
+      {/* <Card className="border-gray-200 shadow-sm">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-gray-900">All Rounds</CardTitle>
-          <CardDescription>View and manage all Mentorship program rounds</CardDescription>
+           <CardDescription>View and manage all Mentorship program rounds</CardDescription> 
+    </CardHeader> */}
+      <Card className="border-gray-200 shadow-sm">
+        <CardHeader className="flex items-center justify-between">
+          <CardTitle className="text-xl font-semibold text-gray-900">All Rounds</CardTitle>
+          {/* Move the button here */}
+          <Button
+            onClick={() => handleOpenDialog()}
+            className="bg-[#6035F3] hover:bg-[#4A28C4] text-white shadow-md hover:shadow-lg transition-all inline-flex items-center"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create New Round
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-gray-200 overflow-hidden">
@@ -430,7 +442,7 @@ export function MentorshipManagementPage() {
               <p className="text-sm text-gray-500">
                 Set the deadline for each phase of the mentorship round
               </p>
-              
+
               <div className="rounded-lg border border-gray-200 overflow-hidden">
                 <Table>
                   <TableHeader>
@@ -456,7 +468,7 @@ export function MentorshipManagementPage() {
                         />
                       </TableCell>
                     </TableRow>
-                    
+
                     <TableRow className="hover:bg-gray-50">
                       <TableCell className="font-medium text-gray-900">
                         <div className="flex items-center gap-2">
@@ -473,7 +485,7 @@ export function MentorshipManagementPage() {
                         />
                       </TableCell>
                     </TableRow>
-                    
+
                     <TableRow className="hover:bg-gray-50">
                       <TableCell className="font-medium text-gray-900">
                         <div className="flex items-center gap-2">
@@ -490,7 +502,7 @@ export function MentorshipManagementPage() {
                         />
                       </TableCell>
                     </TableRow>
-                    
+
                     <TableRow className="hover:bg-gray-50">
                       <TableCell className="font-medium text-gray-900">
                         <div className="flex items-center gap-2">
@@ -507,7 +519,7 @@ export function MentorshipManagementPage() {
                         />
                       </TableCell>
                     </TableRow>
-                    
+
                     <TableRow className="hover:bg-gray-50">
                       <TableCell className="font-medium text-gray-900">
                         <div className="flex items-center gap-2">
@@ -552,6 +564,6 @@ export function MentorshipManagementPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </div >
   );
 }

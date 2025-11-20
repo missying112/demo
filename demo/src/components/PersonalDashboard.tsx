@@ -83,8 +83,8 @@ export function PersonalDashboard({ userData }: PersonalDashboardProps) {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl mb-2">Personal Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {userData.name}</p>
+          {/* <h1 className="text-3xl mb-2">Personal Dashboard</h1> */}
+          <h1 className="text-gray-600">👏 Welcome, {userData.name}</h1>
         </div>
         
         <MeetingManagementDialog
